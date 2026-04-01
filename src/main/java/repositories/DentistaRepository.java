@@ -1,4 +1,4 @@
-package respositories;
+package repositories;
 
 import models.Dentista;
 import org.springframework.data.jpa.repository.JpaRepository;

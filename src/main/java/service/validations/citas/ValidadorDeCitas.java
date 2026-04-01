@@ -1,6 +1,6 @@
 package service.validations.citas;
 
-import dtos.DatosAgendaCita;
+import dtos.cita.DatosAgendaCita;
 
 public interface ValidadorDeCitas {
     void validar(DatosAgendaCita datos);

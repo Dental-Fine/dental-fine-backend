@@ -1,11 +1,11 @@
 package service.validations.citas;
 
-import dtos.DatosAgendaCita;
+import dtos.cita.DatosAgendaCita;
 import org.springframework.beans.factory.annotation.Autowired;
-import respositories.CitaRepository;
+import repositories.CitaRepository;
 import service.validations.ValidationException;
 
-public class ValidacionDiaPaciente implements ValidadorDeCitasPaciente{
+public class ValidacionDiaPaciente implements ValidadorDeCitas{
     @Autowired
     CitaRepository repository;
 

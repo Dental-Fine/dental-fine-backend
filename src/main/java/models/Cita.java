@@ -19,7 +19,6 @@ public class Cita {
     private Estado estado;
     private LocalDate fechaCreacion;
 
-    // en lo mientras para el dinero
     private float monto;
 
     public Cita(long idDentista, long idPaciente, LocalDateTime fecha, Estado estado, LocalDate fechaCreacion) {
@@ -31,12 +30,6 @@ public class Cita {
     }
 
     public void actualizarEstado(Estado estado){
-        this.estado = switch (estado) {
-            case CANCELADA -> Estado.CANCELADA;
-            case INASISTENCIA -> Estado.INASISTENCIA;
-            case FINALIZADA -> Estado.CANCELADA;
-            case ACTIVA -> Estado.ACTIVA;
-            case PENDIENTE -> Estado.PENDIENTE;
-        };
+        this.estado = estado;
     }
 }

@@ -1,4 +1,4 @@
-package dtos;
+package dtos.cita;
 
 import models.Cita;
 

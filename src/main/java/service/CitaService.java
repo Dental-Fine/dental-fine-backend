@@ -1,18 +1,16 @@
 package service;
 
-import dtos.DatosCancelarCita;
-import dtos.DatosDetalleCita;
-import dtos.DatosAgendaCita;
+import dtos.cita.DatosDetalleCita;
+import dtos.cita.DatosAgendaCita;
 import models.Cita;
 import models.Estado;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import respositories.CitaRepository;
-import respositories.DentistaRepository;
-import respositories.PacienteRepository;
+import repositories.CitaRepository;
+import repositories.DentistaRepository;
+import repositories.PacienteRepository;
 import service.validations.ValidationException;
 import service.validations.citas.ValidadorDeCitas;
-import service.validations.citas.ValidadorDeCitasPaciente;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,8 +26,6 @@ public class CitaService {
 
     @Autowired
     private List<ValidadorDeCitas> validadores;
-    @Autowired
-    private List<ValidadorDeCitasPaciente> validadoresPaciente;
 
     public DatosDetalleCita agendarCita(DatosAgendaCita datos){
         if(!pacienteRepo.existsById(datos.idPaciente()))
@@ -37,12 +33,7 @@ public class CitaService {
         if(!dentistaRepository.existsById(datos.idDentista()))
             throw new ValidationException("No existe un dentista con este ID");
 
-        // keloke mi loco esto no importa que sea paciente o personal
-        if(datos.personal()){
-            validadoresPaciente.forEach(v -> v.validar(datos));
-        }else {
-            validadores.forEach(v -> v.validar(datos));
-        }
+        validadores.forEach(v -> v.validar(datos));
 
         Cita cita = citaRepo.save(
                 new Cita(
@@ -57,15 +48,15 @@ public class CitaService {
         return new DatosDetalleCita(cita);
     }
 
-    // Aqui falta ver qué es lo que pasaría si quien cancela la cita es el paciente
-    public DatosCancelarCita ActualizarEstadoCita(DatosCancelarCita datos){
-        Cita cita = citaRepo.getReferenceById(datos.idCita());
+    // Aqui falta ver cómo se haría la penalización
+    public DatosDetalleCita ActualizarEstadoCita(DatosDetalleCita datos, Estado estado){
+        Cita cita = citaRepo.getReferenceById(datos.id());
 
-        if(datos.personal()){
-            cita.actualizarEstado(datos.estado());
-        } else {
+        //Aqui meteria varios casos depende de cuál es el nuevo estado
 
-        }
+        cita.actualizarEstado(estado);
+
+        return new DatosDetalleCita(cita);
     }
 
 }

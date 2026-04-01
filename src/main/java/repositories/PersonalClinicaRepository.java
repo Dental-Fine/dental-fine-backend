@@ -1,4 +1,4 @@
-package respositories;
+package repositories;
 
 import models.PersonalClinica;
 import org.springframework.data.jpa.repository.JpaRepository;
