@@ -6,6 +6,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,8 +24,14 @@ public class Cita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long idDentista;
-    private Long idPaciente;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "dentista_id", nullable = false)
+    private Dentista dentista;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "paciente_id", nullable = false)
+    private Paciente paciente;
+
     private LocalDateTime fecha;
     private String nombre;
     private float monto;
@@ -33,9 +41,9 @@ public class Cita {
 
     private LocalDate fechaCreacion;
 
-    public Cita(Long idDentista, Long idPaciente, LocalDateTime fecha, Estado estado, LocalDate fechaCreacion) {
-        this.idDentista = idDentista;
-        this.idPaciente = idPaciente;
+    public Cita(Dentista dentista, Paciente paciente, LocalDateTime fecha, Estado estado, LocalDate fechaCreacion) {
+        this.dentista = dentista;
+        this.paciente = paciente;
         this.fecha = fecha;
         this.estado = estado;
         this.fechaCreacion = fechaCreacion;

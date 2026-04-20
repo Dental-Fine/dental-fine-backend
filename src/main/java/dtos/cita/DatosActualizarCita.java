@@ -15,8 +15,8 @@ public record DatosActualizarCita(
     public DatosActualizarCita(Cita cita){
         this(
                 cita.getId(),
-                cita.getIdPaciente(),
-                cita.getIdDentista(),
+                cita.getPaciente().getId(),
+                cita.getDentista().getId(),
                 LocalDateTime.now(),
                 cita.getEstado()
         );

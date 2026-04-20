@@ -13,8 +13,8 @@ public record DatosDetalleCita(
     public DatosDetalleCita(Cita cita){
         this(
                 cita.getId(),
-                cita.getIdDentista(),
-                cita.getIdPaciente(),
+                cita.getDentista().getId(),
+                cita.getPaciente().getId(),
                 cita.getFecha()
         );
     }

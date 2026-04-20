@@ -3,7 +3,9 @@ package com.DentalFine.Dental_Fine_BackEnd.service;
 import dtos.cita.DatosDetalleCita;
 import dtos.cita.DatosAgendaCita;
 import com.DentalFine.Dental_Fine_BackEnd.models.Cita;
+import com.DentalFine.Dental_Fine_BackEnd.models.Dentista;
 import com.DentalFine.Dental_Fine_BackEnd.models.Estado;
+import com.DentalFine.Dental_Fine_BackEnd.models.Paciente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.DentalFine.Dental_Fine_BackEnd.repository.CitaRepository;
@@ -35,10 +37,13 @@ public class CitaService {
 
         validadores.forEach(v -> v.validar(datos));
 
+        Paciente paciente = pacienteRepo.getReferenceById(datos.idPaciente());
+        Dentista dentista = dentistaRepository.getReferenceById(datos.idDentista());
+
         Cita cita = citaRepo.save(
                 new Cita(
-                        datos.idDentista(),
-                        datos.idPaciente(),
+                        dentista,
+                        paciente,
                         datos.fecha(),
                         Estado.ACTIVA,
                         LocalDate.now()

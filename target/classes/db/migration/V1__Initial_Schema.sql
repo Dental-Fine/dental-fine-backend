@@ -35,7 +35,13 @@ CREATE TABLE tipo_servicios (
 
 CREATE TABLE cita (
     id BIGSERIAL PRIMARY KEY,
+    dentista_id BIGINT NOT NULL,
+    paciente_id BIGINT NOT NULL,
+    fecha TIMESTAMP NOT NULL,
     nombre VARCHAR(255),
+    monto REAL NOT NULL,
     estado VARCHAR(255),
-    fecha_creacion TIMESTAMP
+    fecha_creacion DATE,
+    CONSTRAINT fk_cita_dentista FOREIGN KEY (dentista_id) REFERENCES dentista(id),
+    CONSTRAINT fk_cita_paciente FOREIGN KEY (paciente_id) REFERENCES paciente(id)
 );
