@@ -18,3 +18,12 @@ C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\s
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\PacienteRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\PersonalClinicaRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\CitaService.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\PacienteService.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\validations\citas\ValidacionDiaPaciente.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\validations\citas\ValidadorDeCitas.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\validations\ValidationException.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\dtos\cita\DatosActualizarCita.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\dtos\cita\DatosAgendaCita.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\dtos\cita\DatosDetalleCita.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\dtos\paciente\DatosDetallePaciente.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\dtos\paciente\DatosRegistrarPaciente.java

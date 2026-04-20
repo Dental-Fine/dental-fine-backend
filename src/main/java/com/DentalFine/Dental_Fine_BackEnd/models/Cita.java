@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,10 +22,26 @@ public class Cita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Long idDentista;
+    private Long idPaciente;
+    private LocalDateTime fecha;
     private String nombre;
+    private float monto;
 
     @Enumerated(EnumType.STRING)
     private Estado estado;
 
-    private LocalDateTime fechaCreacion;
+    private LocalDate fechaCreacion;
+
+    public Cita(Long idDentista, Long idPaciente, LocalDateTime fecha, Estado estado, LocalDate fechaCreacion) {
+        this.idDentista = idDentista;
+        this.idPaciente = idPaciente;
+        this.fecha = fecha;
+        this.estado = estado;
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public void actualizarEstado(Estado estado) {
+        this.estado = estado;
+    }
 }
