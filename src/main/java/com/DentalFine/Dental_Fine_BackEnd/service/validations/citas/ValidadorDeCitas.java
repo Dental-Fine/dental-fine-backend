@@ -1,7 +1,7 @@
 package com.DentalFine.Dental_Fine_BackEnd.service.validations.citas;
 
-import dtos.cita.DatosAgendaCita;
+import com.DentalFine.Dental_Fine_BackEnd.dto.requests.AgendarCitaRequest;
 
 public interface ValidadorDeCitas {
-    void validar(DatosAgendaCita datos);
+    void validar(AgendarCitaRequest datos);
 }

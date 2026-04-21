@@ -32,8 +32,16 @@ public class Cita {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "tipo_servicios_id")
+    private TipoServicios tipoServicio;
+
     private LocalDateTime fecha;
     private String nombre;
+
+    /**
+     * Importe de la cita en {@link com.DentalFine.Dental_Fine_BackEnd.dto.MonedaCodigo#MXN}.
+     */
     private float monto;
 
     @Enumerated(EnumType.STRING)
