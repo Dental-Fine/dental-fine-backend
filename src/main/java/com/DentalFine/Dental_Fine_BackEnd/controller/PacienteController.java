@@ -24,4 +24,14 @@ public class PacienteController {
     public List<PacienteBusquedaResponse> buscar(@RequestParam("q") String q) {
         return pacienteService.buscar(q);
     }
+
+    @GetMapping("/pacientes")
+    public org.springframework.http.ResponseEntity<List<com.DentalFine.Dental_Fine_BackEnd.dto.responses.PacienteDTO>> obtenerTodos() {
+        return org.springframework.http.ResponseEntity.ok(pacienteService.obtenerTodos());
+    }
+
+    @GetMapping("/pacientes/{id}")
+    public org.springframework.http.ResponseEntity<com.DentalFine.Dental_Fine_BackEnd.dto.responses.PacienteDTO> obtenerPorId(@org.springframework.web.bind.annotation.PathVariable Long id) {
+        return org.springframework.http.ResponseEntity.ok(pacienteService.obtenerPorId(id));
+    }
 }

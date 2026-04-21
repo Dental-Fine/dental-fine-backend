@@ -1,7 +1,9 @@
 package com.DentalFine.Dental_Fine_BackEnd.service;
 
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.AgendarCitaRequest;
+import com.DentalFine.Dental_Fine_BackEnd.dto.requests.CancelarCitaRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaAgendarResponse;
+import com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaResumenDTO;
 import com.DentalFine.Dental_Fine_BackEnd.dto.responses.HorarioDisponibilidadResponse;
 import com.DentalFine.Dental_Fine_BackEnd.models.Cita;
 import com.DentalFine.Dental_Fine_BackEnd.models.Dentista;
@@ -13,6 +15,7 @@ import com.DentalFine.Dental_Fine_BackEnd.repository.DentistaRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.PacienteRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.TipoServiciosRepository;
 import com.DentalFine.Dental_Fine_BackEnd.service.validations.ValidationException;
+import com.DentalFine.Dental_Fine_BackEnd.service.validations.citas.ValidadorCancelacionDeCitas;
 import com.DentalFine.Dental_Fine_BackEnd.service.validations.citas.ValidadorDeCitas;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +39,8 @@ public class CitaService {
     private TipoServiciosRepository tipoServiciosRepository;
     @Autowired
     private List<ValidadorDeCitas> validadores;
+    @Autowired
+    private List<ValidadorCancelacionDeCitas> validadoresCancelacion;
     @Autowired
     private AgendaEventPublisher agendaEventPublisher;
 
@@ -106,5 +111,56 @@ public class CitaService {
         cita.actualizarEstado(estado);
         citaRepo.save(cita);
         return new CitaAgendarResponse(cita.getId(), cita.getEstado().name(), "Estado actualizado");
+    }
+
+    @Transactional
+    public CitaAgendarResponse cancelarCita(Long idCita, CancelarCitaRequest request) {
+        Cita cita = citaRepo.findById(idCita)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "No existe la cita indicada."));
+
+        if (cita.getEstado() == Estado.CANCELADA) {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "La cita ya se encuentra cancelada.");
+        }
+
+        if ("PACIENTE".equalsIgnoreCase(request.rolUsuario())) {
+            validadoresCancelacion.forEach(v -> v.validar(cita, request));
+        }
+
+        cita.actualizarEstado(Estado.CANCELADA);
+        Cita guardada = citaRepo.save(cita);
+
+        CitaAgendarResponse respuesta = new CitaAgendarResponse(
+                guardada.getId(),
+                guardada.getEstado().name(),
+                "Cita cancelada correctamente"
+        );
+        agendaEventPublisher.publicarCitaConfirmada(respuesta);
+        return respuesta;
+    }
+
+    public List<CitaResumenDTO> obtenerTodos() {
+        return citaRepo.findAll().stream()
+                .map(this::mapearACitaResumenDTO)
+                .toList();
+    }
+
+    public CitaResumenDTO obtenerPorId(Long id) {
+        Cita cita = citaRepo.findById(id)
+                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.NOT_FOUND, "Cita no encontrada"));
+        return mapearACitaResumenDTO(cita);
+    }
+
+    private CitaResumenDTO mapearACitaResumenDTO(Cita cita) {
+        return new CitaResumenDTO(
+                cita.getId(),
+                new com.DentalFine.Dental_Fine_BackEnd.dto.responses.DentistaDTO(cita.getDentista().getId(), cita.getDentista().getNombre()),
+                new com.DentalFine.Dental_Fine_BackEnd.dto.responses.PacienteDTO(cita.getPaciente().getId(), cita.getPaciente().getNombre(), cita.getPaciente().getApellidos(), cita.getPaciente().getTelefono(), cita.getPaciente().getCorreo()),
+                cita.getTipoServicio() != null ? new com.DentalFine.Dental_Fine_BackEnd.dto.responses.ServicioDTO(cita.getTipoServicio().getId(), cita.getTipoServicio().getNombre(), cita.getTipoServicio().getPrecio(), cita.getTipoServicio().getDuracion()) : null,
+                cita.getFecha(),
+                cita.getNombre(),
+                cita.getMonto(),
+                cita.getEstado() != null ? cita.getEstado().name() : null,
+                cita.getFechaCreacion()
+        );
     }
 }
