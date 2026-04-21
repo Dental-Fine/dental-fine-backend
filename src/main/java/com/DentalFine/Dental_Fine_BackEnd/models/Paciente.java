@@ -1,6 +1,6 @@
 package com.DentalFine.Dental_Fine_BackEnd.models;
 
-import dtos.paciente.DatosRegistrarPaciente;
+import com.DentalFine.Dental_Fine_BackEnd.dto.requests.RegistrarPacienteRequest;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,11 +19,14 @@ public class Paciente {
     private Long id;
 
     private String nombre;
+    /** Apellidos del paciente (búsqueda y respuestas MVP). */
+    private String apellidos;
     private String telefono;
     private String correo;
 
-    public Paciente(DatosRegistrarPaciente datos) {
+    public Paciente(RegistrarPacienteRequest datos) {
         this.nombre = datos.nombre();
+        this.apellidos = datos.apellidos() != null ? datos.apellidos() : "";
         this.telefono = datos.telefono();
         this.correo = datos.correo();
     }

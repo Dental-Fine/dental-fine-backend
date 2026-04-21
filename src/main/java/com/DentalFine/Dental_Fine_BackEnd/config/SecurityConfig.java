@@ -11,18 +11,21 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Con esto comenzamos a cofigurar el CORS con el Bean de abajito
-            .csrf(AbstractHttpConfigurer::disable) // Lo deshabilitamos pora utilizar en su lugar JWT
-            .authorizeHttpRequests(auth -> auth // Aquí es donde manejamos la autenticación con JWT en los endpoints
-                    .anyRequest().permitAll() // Cuando implementemos JWT, cambiaremos esto a .authenticated() y definiremos los roles de los usuarios
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/ws-dentalfine/**").permitAll()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
@@ -31,21 +34,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
-        // URL del front (Por defecto puerto 5173 para REact)
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8080"));
-
-        // Métodos HTTP
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        // Cabeceras (Authorization es para JWT)
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-
-        // Credenciales para el modulo de webSockets
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setExposedHeaders(Collections.emptyList());
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Aplica CORS a todas los endpoints del backend
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }

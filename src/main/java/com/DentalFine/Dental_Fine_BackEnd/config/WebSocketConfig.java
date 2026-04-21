@@ -12,15 +12,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/citas"); // Aquí se emiten mensajes hacia los clientes
-
-        config.setApplicationDestinationPrefixes("/app"); // Es donde el cliente envia mensajes al servidor
+        config.enableSimpleBroker("/topic");
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
-    public void registerStompEndpoints(StompEndpointRegistry registro){
-        registro.addEndpoint("/ws-dental-fine") // URL por defecto donde se conecta el front
-                .setAllowedOrigins("http://localhost:5173") // Lo que se configuró en security config, para web sockets
-                .withSockJS(); // Fallback por si el navegador no soporta WebSockets puros
+    public void registerStompEndpoints(StompEndpointRegistry registro) {
+        registro.addEndpoint("/ws-dentalfine")
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 }
