@@ -1,0 +1,3 @@
+com\DentalFine\Dental_Fine_BackEnd\config\SecurityConfig.class
+com\DentalFine\Dental_Fine_BackEnd\config\GlobalExceptionHandler.class
+com\DentalFine\Dental_Fine_BackEnd\config\WebSocketConfig.class
