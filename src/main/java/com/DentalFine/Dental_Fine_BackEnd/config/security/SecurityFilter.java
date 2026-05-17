@@ -37,7 +37,7 @@ public class SecurityFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception e) {
-                // Loguear error de token si es necesario
+                e.printStackTrace();
             }
         }
         filterChain.doFilter(request, response);

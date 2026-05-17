@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.resttestclient.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,8 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DentalFineSystemTest {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+    @org.springframework.boot.test.web.server.LocalServerPort
+    private int port;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -41,24 +41,53 @@ class DentalFineSystemTest {
     }
 
     @Test
-    void flujoCompletoLoginYBuscarPacientes() {
-        // a) Hacer POST a /auth/login para obtener el token real
-        LoginRequest loginRequest = new LoginRequest("admin@dentalfine.com", "123456");
-        ResponseEntity<LoginResponse> loginResponse = restTemplate.postForEntity("/auth/login", loginRequest, LoginResponse.class);
+    void flujoCompletoLoginYBuscarPacientes() throws Exception {
+        // PASO 1: Payload de Login
+        String loginJson = """
+                {
+                  "correo": "admin@dentalfine.com",
+                  "contrasena": "123456"
+                }
+                """;
 
-        assertEquals(200, loginResponse.getStatusCode().value());
-        assertNotNull(loginResponse.getBody());
-        String token = loginResponse.getBody().token();
-        assertNotNull(token);
+        java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
 
-        // b) Usar ese token en los headers para hacer un GET a un endpoint protegido (ej. /pacientes o /citas)
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        // PASO 2: Petición POST a /auth/login
+        java.net.http.HttpRequest loginRequest = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:" + port + "/auth/login"))
+                .header("Content-Type", "application/json")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofString(loginJson))
+                .build();
 
-        ResponseEntity<String> getResponse = restTemplate.exchange("/pacientes", HttpMethod.GET, entity, String.class);
-        
-        // Verifica que la respuesta sea exitosa (2xx)
-        assertTrue(getResponse.getStatusCode().is2xxSuccessful() || getResponse.getStatusCode().value() == 404);
+        java.net.http.HttpResponse<String> loginResponse = client.send(loginRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        // --- BLOQUE DE DEBUG ---
+        if (loginResponse.statusCode() != 200) {
+            System.out.println("\n============ ERROR DEL BACKEND ============");
+            System.out.println("Status: " + loginResponse.statusCode());
+            System.out.println("Body: " + loginResponse.body());
+            System.out.println("===========================================\n");
+        }
+        // -----------------------
+
+        assertEquals(200, loginResponse.statusCode(), "El login falló, revisa las credenciales");
+        assertTrue(loginResponse.body().contains("token"), "El JSON no contiene el token");
+
+        // PASO 3: Extraer el token de la respuesta JSON usando Jackson (incluido en Spring)
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        com.fasterxml.jackson.databind.JsonNode root = mapper.readTree(loginResponse.body());
+        String token = root.path("token").asText();
+
+        // PASO 4: Petición GET a /pacientes CON EL TOKEN BEARER
+        java.net.http.HttpRequest pacientesRequest = java.net.http.HttpRequest.newBuilder()
+                .uri(java.net.URI.create("http://localhost:" + port + "/pacientes"))
+                .header("Authorization", "Bearer " + token) // <-- El prefijo mágico
+                .GET()
+                .build();
+
+        java.net.http.HttpResponse<String> pacientesResponse = client.send(pacientesRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+
+        // PASO 5: Validar que el servidor nos dio acceso (200 OK)
+        assertEquals(200, pacientesResponse.statusCode(), "Fallo 403: El servidor rechazó el token al ir a /pacientes");
     }
 }

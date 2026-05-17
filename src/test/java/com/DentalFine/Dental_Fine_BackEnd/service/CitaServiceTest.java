@@ -52,7 +52,7 @@ class CitaServiceTest {
         Dentista dentista = new Dentista(); dentista.setId(1L);
         TipoServicios tipoServicio = new TipoServicios(); 
         tipoServicio.setId(1L); 
-        tipoServicio.setPrecio(new BigDecimal("100.00")); 
+        tipoServicio.setPrecio(100.00); 
         tipoServicio.setNombre("Limpieza");
 
         Mockito.when(pacienteRepo.getReferenceById(1L)).thenReturn(paciente);
@@ -69,7 +69,7 @@ class CitaServiceTest {
 
         // Assert
         assertNotNull(response);
-        assertEquals(1L, response.id());
+        assertEquals(1L, response.idCita());
         assertEquals("PENDIENTE", response.estado());
         Mockito.verify(agendaEventPublisher).publicarCitaConfirmada(any(CitaAgendarResponse.class));
     }

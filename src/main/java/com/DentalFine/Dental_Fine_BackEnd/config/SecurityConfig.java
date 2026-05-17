@@ -34,11 +34,12 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers("/ws-dentalfine/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers("/pacientes/**", "/citas/**", "/servicios/**", "/dentistas/**").authenticated()
                         .anyRequest().authenticated()
                 )

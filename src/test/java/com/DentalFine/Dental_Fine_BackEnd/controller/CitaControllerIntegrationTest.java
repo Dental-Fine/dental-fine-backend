@@ -5,11 +5,10 @@ import com.DentalFine.Dental_Fine_BackEnd.dto.requests.AgendarCitaRequest;
 import com.DentalFine.Dental_Fine_BackEnd.models.Rol;
 import com.DentalFine.Dental_Fine_BackEnd.models.Usuario;
 import com.DentalFine.Dental_Fine_BackEnd.repository.UsuarioRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,28 +30,57 @@ class CitaControllerIntegrationTest {
     private TokenService tokenService;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
     private String validToken;
+
+    @Autowired
+    private com.DentalFine.Dental_Fine_BackEnd.repository.PacienteRepository pacienteRepo;
+    @Autowired
+    private com.DentalFine.Dental_Fine_BackEnd.repository.DentistaRepository dentistaRepo;
+    @Autowired
+    private com.DentalFine.Dental_Fine_BackEnd.repository.TipoServiciosRepository tipoServicioRepo;
 
     @BeforeEach
     void setUp() {
         Usuario testUser = new Usuario(null, "test@dentalfine.com", "password", Rol.ROLE_DOCTOR);
         usuarioRepository.save(testUser);
         validToken = tokenService.generarToken(testUser);
+
+        // Crear datos necesarios para la cita
+        com.DentalFine.Dental_Fine_BackEnd.models.Paciente p = new com.DentalFine.Dental_Fine_BackEnd.models.Paciente();
+        p.setNombre("Juan"); p.setApellidos("Perez");
+        pacienteRepo.save(p);
+
+        com.DentalFine.Dental_Fine_BackEnd.models.Dentista d = new com.DentalFine.Dental_Fine_BackEnd.models.Dentista();
+        d.setNombre("Dr. Smith");
+        dentistaRepo.save(d);
+
+        com.DentalFine.Dental_Fine_BackEnd.models.TipoServicios t = new com.DentalFine.Dental_Fine_BackEnd.models.TipoServicios();
+        t.setNombre("Limpieza"); t.setPrecio(100.0);
+        tipoServicioRepo.save(t);
     }
 
     @Test
     void agendarCita_retorna200_conTokenValido() throws Exception {
-        AgendarCitaRequest request = new AgendarCitaRequest(1L, 1L, 1L, LocalDateTime.now().plusDays(1));
+        // Obtenemos los id reales generados por la BD H2
+        Long idPaciente = pacienteRepo.findAll().get(0).getId();
+        Long idDentista = dentistaRepo.findAll().get(0).getId();
+        Long idTipoServicio = tipoServicioRepo.findAll().get(0).getId();
+
+        String jsonPayload = String.format("""
+                {
+                  "pacienteId": %d,
+                  "dentistaId": %d,
+                  "tipoServicioId": %d,
+                  "fechaHora": "2026-10-10T10:00:00"
+                }
+                """, idPaciente, idDentista, idTipoServicio);
 
         mockMvc.perform(post("/citas/agendar")
                         .header("Authorization", "Bearer " + validToken)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(jsonPayload))
                 .andExpect(result -> {
                     int statusCode = result.getResponse().getStatus();
                     org.junit.jupiter.api.Assertions.assertTrue(statusCode == 200 || statusCode == 201 || statusCode == 400 || statusCode == 404);

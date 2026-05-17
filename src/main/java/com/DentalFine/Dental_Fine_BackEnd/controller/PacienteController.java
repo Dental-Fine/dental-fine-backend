@@ -17,9 +17,7 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
-    /**
-     * Contrato: GET /api/pacientes/buscar → GET /pacientes/buscar
-     */
+
     @GetMapping("/pacientes/buscar")
     public List<PacienteBusquedaResponse> buscar(@RequestParam("q") String q) {
         return pacienteService.buscar(q);
