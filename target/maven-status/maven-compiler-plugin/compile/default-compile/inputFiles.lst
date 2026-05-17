@@ -1,4 +1,7 @@
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\config\GlobalExceptionHandler.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\config\security\AutenticacionService.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\config\security\SecurityFilter.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\config\security\TokenService.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\config\SecurityConfig.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\config\WebSocketConfig.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\controller\AuthController.java
@@ -31,11 +34,13 @@ C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\s
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\models\PersonalClinica.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\models\Rol.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\models\TipoServicios.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\models\Usuario.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\CitaRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\DentistaRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\PacienteRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\PersonalClinicaRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\TipoServiciosRepository.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\repository\UsuarioRepository.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\AgendaEventPublisher.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\CitaService.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\DentistaService.java
@@ -46,3 +51,4 @@ C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\s
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\validations\citas\ValidadorCancelacionDeCitas.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\validations\citas\ValidadorDeCitas.java
 C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\com\DentalFine\Dental_Fine_BackEnd\service\validations\ValidationException.java
+C:\Users\omg02\OneDrive\Escritorio\Escuela\6to Sem\Ing. Sw\dental-fine-backend\src\main\java\config\SecurityConfig.java
