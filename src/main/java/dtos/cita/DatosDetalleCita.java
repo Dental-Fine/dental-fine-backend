@@ -1,0 +1,21 @@
+package dtos.cita;
+
+import models.Cita;
+
+import java.time.LocalDateTime;
+
+public record DatosDetalleCita(
+        Long id,
+        Long idDentista,
+        Long idPaciente,
+        LocalDateTime fecha
+) {
+    public DatosDetalleCita(Cita cita){
+        this(
+                cita.getId(),
+                cita.getIdDentista(),
+                cita.getIdPaciente(),
+                cita.getFecha()
+        );
+    }
+}
