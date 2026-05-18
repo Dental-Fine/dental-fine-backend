@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.DentalFine.Dental_Fine_BackEnd.service.CitaServiceTest
 -------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 11.11 s -- in com.DentalFine.Dental_Fine_BackEnd.service.CitaServiceTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.652 s -- in com.DentalFine.Dental_Fine_BackEnd.service.CitaServiceTest
