@@ -13,6 +13,7 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,11 +27,13 @@ public class Cita {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ToString.Exclude
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)
     @JoinColumn(name = "dentista_id", nullable = false)
     private Dentista dentista;
 
-    @ManyToOne(optional = false)
+    @ToString.Exclude
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
@@ -42,10 +45,14 @@ public class Cita {
 
     private LocalDate fechaCreacion;
 
-    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private Ticket ticket;
 
-    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private EvolucionTratamiento evolucionTratamiento;
 
     public Cita(Dentista dentista, Paciente paciente, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin, Estado estado, LocalDate fechaCreacion) {

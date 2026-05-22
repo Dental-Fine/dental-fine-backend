@@ -12,6 +12,7 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,15 +26,18 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ToString.Exclude
+    @OneToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "cita_id")
     private Cita cita;
 
-    @ManyToOne
+    @ToString.Exclude
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "expediente_clinico_id")
     private ExpedienteClinico expedienteClinico;
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private List<DetalleTicket> detalles;
 
     /**

@@ -11,6 +11,7 @@ import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,13 +29,16 @@ public class ExpedienteClinico {
     private String enfermedadesCronicas;
     private LocalDate fechaCreacion;
 
-    @OneToOne
+    @ToString.Exclude
+    @OneToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
-    @OneToOne(mappedBy = "expedienteClinico", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @OneToOne(mappedBy = "expedienteClinico", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private Odontograma odontograma;
 
-    @OneToMany(mappedBy = "expedienteClinico", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @OneToMany(mappedBy = "expedienteClinico", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private List<EvolucionTratamiento> evoluciones;
 }

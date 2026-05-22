@@ -16,6 +16,7 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
             where c.paciente.id = :pacienteId
               and c.fechaHoraInicio >= :inicio
               and c.fechaHoraInicio < :finExclusivo
+              and c.estado != 'CANCELADA'
             """)
     boolean existsCitaPacienteEnRango(
             @Param("pacienteId") Long pacienteId,
@@ -28,6 +29,7 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
             where c.dentista.id = :dentistaId
               and c.fechaHoraInicio >= :inicio
               and c.fechaHoraInicio < :finExclusivo
+              and c.estado != 'CANCELADA'
             order by c.fechaHoraInicio
             """)
     List<Cita> findCitasDentistaEnRango(

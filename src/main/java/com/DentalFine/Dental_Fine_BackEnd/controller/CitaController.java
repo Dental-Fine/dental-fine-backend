@@ -42,7 +42,7 @@ public class CitaController {
      * Contrato: POST /citas/agendar
      */
     @PostMapping("/citas/agendar")
-    public ResponseEntity<CitaAgendarResponse> agendar(@RequestBody AgendarCitaRequest body) {
+    public ResponseEntity<CitaAgendarResponse> agendar(@jakarta.validation.Valid @RequestBody AgendarCitaRequest body) {
         return ResponseEntity.status(HttpStatus.CREATED).body(citaService.agendarCita(body));
     }
 
