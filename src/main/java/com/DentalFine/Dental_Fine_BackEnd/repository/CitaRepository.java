@@ -14,8 +14,8 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
             select case when count(c) > 0 then true else false end
             from Cita c
             where c.paciente.id = :pacienteId
-              and c.fecha >= :inicio
-              and c.fecha < :finExclusivo
+              and c.fechaHoraInicio >= :inicio
+              and c.fechaHoraInicio < :finExclusivo
             """)
     boolean existsCitaPacienteEnRango(
             @Param("pacienteId") Long pacienteId,
@@ -26,9 +26,9 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
     @Query("""
             select c from Cita c
             where c.dentista.id = :dentistaId
-              and c.fecha >= :inicio
-              and c.fecha < :finExclusivo
-            order by c.fecha
+              and c.fechaHoraInicio >= :inicio
+              and c.fechaHoraInicio < :finExclusivo
+            order by c.fechaHoraInicio
             """)
     List<Cita> findCitasDentistaEnRango(
             @Param("dentistaId") Long dentistaId,

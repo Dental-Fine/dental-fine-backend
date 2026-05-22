@@ -17,4 +17,8 @@ public class Dentista {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
+
+    @jakarta.persistence.OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
+    @jakarta.persistence.JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
 }

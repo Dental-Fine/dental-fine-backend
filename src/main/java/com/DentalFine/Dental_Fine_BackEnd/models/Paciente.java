@@ -24,6 +24,10 @@ public class Paciente {
     private String telefono;
     private String correo;
 
+    @jakarta.persistence.OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
+    @jakarta.persistence.JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
+
     public Paciente(RegistrarPacienteRequest datos) {
         this.nombre = datos.nombre();
         this.apellidos = datos.apellidos() != null ? datos.apellidos() : "";

@@ -43,10 +43,9 @@ class CitaServiceTest {
     @Test
     void agendarCita_exitoso() {
         // Arrange
-        AgendarCitaRequest request = new AgendarCitaRequest(1L, 1L, 1L, LocalDateTime.now().plusDays(1));
+        AgendarCitaRequest request = new AgendarCitaRequest(1L, 1L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1).plusHours(1));
         Mockito.when(pacienteRepo.existsById(1L)).thenReturn(true);
         Mockito.when(dentistaRepository.existsById(1L)).thenReturn(true);
-        Mockito.when(tipoServiciosRepository.existsById(1L)).thenReturn(true);
 
         Paciente paciente = new Paciente(); paciente.setId(1L);
         Dentista dentista = new Dentista(); dentista.setId(1L);
@@ -57,7 +56,6 @@ class CitaServiceTest {
 
         Mockito.when(pacienteRepo.getReferenceById(1L)).thenReturn(paciente);
         Mockito.when(dentistaRepository.getReferenceById(1L)).thenReturn(dentista);
-        Mockito.when(tipoServiciosRepository.getReferenceById(1L)).thenReturn(tipoServicio);
 
         Cita citaGuardada = new Cita(); 
         citaGuardada.setId(1L); 
@@ -77,7 +75,7 @@ class CitaServiceTest {
     @Test
     void agendarCita_lanzaValidationException_siNoExistePaciente() {
         // Arrange
-        AgendarCitaRequest request = new AgendarCitaRequest(99L, 1L, 1L, LocalDateTime.now().plusDays(1));
+        AgendarCitaRequest request = new AgendarCitaRequest(99L, 1L, LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(1).plusHours(1));
         Mockito.when(pacienteRepo.existsById(99L)).thenReturn(false);
 
         // Act & Assert

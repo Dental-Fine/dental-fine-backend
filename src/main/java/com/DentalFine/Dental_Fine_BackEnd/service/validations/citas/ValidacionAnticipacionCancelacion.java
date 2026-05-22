@@ -14,7 +14,7 @@ public class ValidacionAnticipacionCancelacion implements ValidadorCancelacionDe
     public void validar(Cita cita, CancelarCitaRequest request) {
         if ("PACIENTE".equalsIgnoreCase(request.rolUsuario())) {
             LocalDateTime ahora = LocalDateTime.now();
-            LocalDateTime limiteCancelacion = cita.getFecha().minusHours(24);
+            LocalDateTime limiteCancelacion = cita.getFechaHoraInicio().minusHours(24);
             
             if (ahora.isAfter(limiteCancelacion)) {
                 throw new ValidationException("Los pacientes no pueden cancelar citas con menos de 24 horas de anticipación.");

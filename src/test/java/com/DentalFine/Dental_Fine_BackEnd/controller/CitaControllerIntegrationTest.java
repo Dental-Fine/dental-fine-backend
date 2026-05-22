@@ -45,7 +45,7 @@ class CitaControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        Usuario testUser = new Usuario(null, "test@dentalfine.com", "password", Rol.ROLE_DOCTOR);
+        Usuario testUser = new Usuario(null, "test@dentalfine.com", "password", Rol.ROLE_DENTISTA);
         usuarioRepository.save(testUser);
         validToken = tokenService.generarToken(testUser);
 
@@ -74,10 +74,10 @@ class CitaControllerIntegrationTest {
                 {
                   "pacienteId": %d,
                   "dentistaId": %d,
-                  "tipoServicioId": %d,
-                  "fechaHora": "2026-10-10T10:00:00"
+                  "fechaHoraInicio": "2026-10-10T10:00:00",
+                  "fechaHoraFin": "2026-10-10T11:00:00"
                 }
-                """, idPaciente, idDentista, idTipoServicio);
+                """, idPaciente, idDentista);
 
         mockMvc.perform(post("/citas/agendar")
                         .header("Authorization", "Bearer " + validToken)

@@ -1,5 +1,6 @@
 package com.DentalFine.Dental_Fine_BackEnd.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,27 +34,25 @@ public class Cita {
     @JoinColumn(name = "paciente_id", nullable = false)
     private Paciente paciente;
 
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "tipo_servicios_id")
-    private TipoServicios tipoServicio;
-
-    private LocalDateTime fecha;
-    private String nombre;
-
-    /**
-     * Importe de la cita en {@link com.DentalFine.Dental_Fine_BackEnd.dto.MonedaCodigo#MXN}.
-     */
-    private float monto;
+    private LocalDateTime fechaHoraInicio;
+    private LocalDateTime fechaHoraFin;
 
     @Enumerated(EnumType.STRING)
     private Estado estado;
 
     private LocalDate fechaCreacion;
 
-    public Cita(Dentista dentista, Paciente paciente, LocalDateTime fecha, Estado estado, LocalDate fechaCreacion) {
+    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL)
+    private Ticket ticket;
+
+    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL)
+    private EvolucionTratamiento evolucionTratamiento;
+
+    public Cita(Dentista dentista, Paciente paciente, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin, Estado estado, LocalDate fechaCreacion) {
         this.dentista = dentista;
         this.paciente = paciente;
-        this.fecha = fecha;
+        this.fechaHoraInicio = fechaHoraInicio;
+        this.fechaHoraFin = fechaHoraFin;
         this.estado = estado;
         this.fechaCreacion = fechaCreacion;
     }

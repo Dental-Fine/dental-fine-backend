@@ -28,7 +28,7 @@ public class CitaController {
     }
 
     /**
-     * Contrato: GET /api/citas/disponibilidad → GET /citas/disponibilidad
+     * Contrato: GET /citas/disponibilidad
      */
     @GetMapping("/citas/disponibilidad")
     public List<HorarioDisponibilidadResponse> disponibilidad(
@@ -39,7 +39,7 @@ public class CitaController {
     }
 
     /**
-     * Contrato: POST /api/citas/agendar → POST /citas/agendar
+     * Contrato: POST /citas/agendar
      */
     @PostMapping("/citas/agendar")
     public ResponseEntity<CitaAgendarResponse> agendar(@RequestBody AgendarCitaRequest body) {
@@ -59,5 +59,10 @@ public class CitaController {
     @PutMapping("/citas/{id}/cancelar")
     public ResponseEntity<CitaAgendarResponse> cancelar(@PathVariable Long id, @RequestBody com.DentalFine.Dental_Fine_BackEnd.dto.requests.CancelarCitaRequest body) {
         return ResponseEntity.ok(citaService.cancelarCita(id, body));
+    }
+
+    @GetMapping("/citas/paciente/{pacienteId}")
+    public ResponseEntity<List<com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaResumenDTO>> obtenerPorPaciente(@PathVariable Long pacienteId) {
+        return ResponseEntity.ok(citaService.obtenerPorPaciente(pacienteId));
     }
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public record AgendarCitaRequest(
         @JsonProperty("pacienteId") Long pacienteId,
         @JsonProperty("dentistaId") Long dentistaId,
-        @JsonProperty("tipoServicioId") Long tipoServicioId,
-        @JsonProperty("fechaHora") LocalDateTime fechaHora
+        @JsonProperty("fechaHoraInicio") LocalDateTime fechaHoraInicio,
+        @JsonProperty("fechaHoraFin") LocalDateTime fechaHoraFin
 ) {
 }

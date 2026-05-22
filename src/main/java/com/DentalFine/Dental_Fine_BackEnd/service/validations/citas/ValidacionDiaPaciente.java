@@ -16,7 +16,7 @@ public class ValidacionDiaPaciente implements ValidadorDeCitas {
 
     @Override
     public void validar(AgendarCitaRequest datos) {
-        LocalDateTime inicio = datos.fechaHora().toLocalDate().atStartOfDay();
+        LocalDateTime inicio = datos.fechaHoraInicio().toLocalDate().atStartOfDay();
         LocalDateTime finExclusivo = inicio.plusDays(1);
         if (repository.existsCitaPacienteEnRango(datos.pacienteId(), inicio, finExclusivo)) {
             throw new ValidationException("El paciente ya cuenta con una cita en este mismo dia");
