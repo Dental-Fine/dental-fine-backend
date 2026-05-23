@@ -30,7 +30,7 @@ class DentalFineSystemTest {
     void setUp() {
         // Garantizamos que la base de datos de prueba tenga al usuario antes del Login
         usuarioRepository.deleteAll();
-        Usuario admin = new Usuario(null, "admin@dentalfine.com", passwordEncoder.encode("123456"), Rol.ROLE_PERSONAL_CLINICA);
+        Usuario admin = new Usuario(null, "admin@dentalfine.com", passwordEncoder.encode("123456"), Rol.ROLE_RECEPCIONISTA);
         usuarioRepository.save(admin);
     }
 
@@ -60,7 +60,6 @@ class DentalFineSystemTest {
             System.out.println(loginResponse.body());
         }
 
-        // Validamos que el login haya sido exitoso (Ya debe dar 200)
         assertEquals(200, loginResponse.statusCode(), "El login fallo a pesar de inyectar el usuario en H2");
         assertTrue(loginResponse.body().contains("token"), "No se devolvió el token");
 

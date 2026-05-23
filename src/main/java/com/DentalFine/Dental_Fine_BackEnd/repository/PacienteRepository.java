@@ -11,8 +11,11 @@ public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 
     @Query("""
             SELECT p FROM Paciente p
-            WHERE LOWER(CONCAT(COALESCE(p.nombre, ''), ' ', COALESCE(p.apellidos, ''))) LIKE LOWER(:like)
-               OR (p.telefono IS NOT NULL AND p.telefono LIKE :like)
+            WHERE (LOWER(CONCAT(COALESCE(p.nombre, ''), ' ', COALESCE(p.apellidos, ''))) LIKE LOWER(:like)
+               OR (p.telefono IS NOT NULL AND p.telefono LIKE :like))
+               AND p.activo = true
             """)
     List<Paciente> buscarPorNombreApellidosOTelefono(@Param("like") String like);
+
+    List<Paciente> findByActivoTrue();
 }

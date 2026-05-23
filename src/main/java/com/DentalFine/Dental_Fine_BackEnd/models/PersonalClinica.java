@@ -23,6 +23,7 @@ public class PersonalClinica {
     private String telefono;
     private String correo;
 
-    @Enumerated(EnumType.STRING)
-    private Rol rol;
+    @jakarta.persistence.OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
+    @jakarta.persistence.JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    private Usuario usuario;
 }

@@ -1,7 +1,7 @@
 package com.DentalFine.Dental_Fine_BackEnd.dto;
 
 /**
- * Moneda oficial para montos clínicos y precios de servicio en este MVP: peso mexicano (ISO 4217).
+ * Moneda oficial para montos clínicos y precios de servicio.
  */
 public final class MonedaCodigo {
 
