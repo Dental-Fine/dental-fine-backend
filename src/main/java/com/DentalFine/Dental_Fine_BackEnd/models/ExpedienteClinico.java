@@ -2,6 +2,7 @@ package com.DentalFine.Dental_Fine_BackEnd.models;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,18 +28,19 @@ public class ExpedienteClinico {
 
     private String alergias;
     private String enfermedadesCronicas;
+    private String tipoSanguineo;
     private LocalDate fechaCreacion;
 
     @ToString.Exclude
-    @OneToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
     @ToString.Exclude
-    @OneToOne(mappedBy = "expedienteClinico", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    @OneToOne(mappedBy = "expedienteClinico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Odontograma odontograma;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "expedienteClinico", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    @OneToMany(mappedBy = "expedienteClinico", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EvolucionTratamiento> evoluciones;
 }

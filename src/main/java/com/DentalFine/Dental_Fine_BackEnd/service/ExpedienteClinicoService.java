@@ -2,10 +2,12 @@ package com.DentalFine.Dental_Fine_BackEnd.service;
 
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.EvolucionAgregarRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.OdontogramaActualizarRequest;
+import com.DentalFine.Dental_Fine_BackEnd.dto.requests.SaludGeneralRequest;
 import com.DentalFine.Dental_Fine_BackEnd.models.Cita;
 import com.DentalFine.Dental_Fine_BackEnd.models.EvolucionTratamiento;
 import com.DentalFine.Dental_Fine_BackEnd.models.ExpedienteClinico;
 import com.DentalFine.Dental_Fine_BackEnd.models.Odontograma;
+import com.DentalFine.Dental_Fine_BackEnd.models.Paciente;
 import com.DentalFine.Dental_Fine_BackEnd.repository.CitaRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.EvolucionTratamientoRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.ExpedienteClinicoRepository;
@@ -29,21 +31,31 @@ public class ExpedienteClinicoService {
     @Autowired
     private CitaRepository citaRepository;
 
+    @Transactional
     public ExpedienteClinico obtenerPorPacienteId(Long pacienteId) {
-        return expedienteRepository.findByPacienteId(pacienteId)
+        ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
                 .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado para el paciente"));
+
+        // Forzar inicialización Lazy
+        if (expediente.getEvoluciones() != null) {
+            expediente.getEvoluciones().size();
+        }
+        if (expediente.getOdontograma() != null && expediente.getOdontograma().getEstadoDientes() != null) {
+            expediente.getOdontograma().getEstadoDientes().size();
+        }
+        return expediente;
     }
 
     @Transactional
-    public ExpedienteClinico crearExpediente(com.DentalFine.Dental_Fine_BackEnd.models.Paciente paciente) {
+    public ExpedienteClinico crearExpediente(Paciente paciente) {
         ExpedienteClinico exp = new ExpedienteClinico();
         exp.setPaciente(paciente);
         exp.setFechaCreacion(LocalDate.now());
-        
+
         Odontograma odontograma = new Odontograma();
         odontograma.setExpedienteClinico(exp);
         odontograma.setEstadoDientes(new HashMap<>());
-        
+
         exp.setOdontograma(odontograma);
         return expedienteRepository.save(exp);
     }
@@ -52,7 +64,7 @@ public class ExpedienteClinicoService {
     public Odontograma actualizarOdontograma(Long expedienteId, OdontogramaActualizarRequest request) {
         ExpedienteClinico exp = expedienteRepository.findById(expedienteId)
                 .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
-        
+
         Odontograma odontograma = exp.getOdontograma();
         if (odontograma == null) {
             odontograma = new Odontograma();
@@ -78,5 +90,17 @@ public class ExpedienteClinicoService {
         ev.setFechaRegistro(LocalDate.now());
 
         return evolucionRepository.save(ev);
+    }
+
+    @Transactional
+    public ExpedienteClinico actualizarSaludGeneral(Long pacienteId, SaludGeneralRequest request) {
+        ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+
+        expediente.setAlergias(request.alergias());
+        expediente.setEnfermedadesCronicas(request.enfermedadesCronicas());
+        expediente.setTipoSanguineo(request.tipoSanguineo());
+
+        return expedienteRepository.save(expediente);
     }
 }

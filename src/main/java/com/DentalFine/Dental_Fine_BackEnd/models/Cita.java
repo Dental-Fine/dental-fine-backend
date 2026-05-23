@@ -45,6 +45,9 @@ public class Cita {
 
     private LocalDate fechaCreacion;
 
+    @jakarta.persistence.Column(columnDefinition = "boolean default true")
+    private Boolean activo = true;
+
     @ToString.Exclude
     @com.fasterxml.jackson.annotation.JsonIgnore
     @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
@@ -55,7 +58,8 @@ public class Cita {
     @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
     private EvolucionTratamiento evolucionTratamiento;
 
-    public Cita(Dentista dentista, Paciente paciente, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin, Estado estado, LocalDate fechaCreacion) {
+    public Cita(Dentista dentista, Paciente paciente, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,
+            Estado estado, LocalDate fechaCreacion) {
         this.dentista = dentista;
         this.paciente = paciente;
         this.fechaHoraInicio = fechaHoraInicio;

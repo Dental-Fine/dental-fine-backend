@@ -2,6 +2,7 @@ package com.DentalFine.Dental_Fine_BackEnd.controller;
 
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.EvolucionAgregarRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.OdontogramaActualizarRequest;
+import com.DentalFine.Dental_Fine_BackEnd.dto.requests.SaludGeneralRequest;
 import com.DentalFine.Dental_Fine_BackEnd.models.EvolucionTratamiento;
 import com.DentalFine.Dental_Fine_BackEnd.models.ExpedienteClinico;
 import com.DentalFine.Dental_Fine_BackEnd.models.Odontograma;
@@ -29,12 +30,21 @@ public class ExpedienteController {
     }
 
     @PutMapping("/expedientes/{id}/odontograma")
-    public ResponseEntity<Odontograma> actualizarOdontograma(@PathVariable Long id, @RequestBody OdontogramaActualizarRequest body) {
+    public ResponseEntity<Odontograma> actualizarOdontograma(@PathVariable Long id,
+            @RequestBody OdontogramaActualizarRequest body) {
         return ResponseEntity.ok(expedienteService.actualizarOdontograma(id, body));
     }
 
     @PostMapping("/expedientes/{id}/evolucion")
-    public ResponseEntity<EvolucionTratamiento> agregarEvolucion(@PathVariable Long id, @RequestBody EvolucionAgregarRequest body) {
+    public ResponseEntity<EvolucionTratamiento> agregarEvolucion(@PathVariable Long id,
+            @RequestBody EvolucionAgregarRequest body) {
         return ResponseEntity.ok(expedienteService.agregarEvolucion(id, body));
+    }
+
+    @PutMapping("/expedientes/paciente/{pacienteId}/salud-general")
+    public ResponseEntity<ExpedienteClinico> actualizarSaludGeneral(
+            @PathVariable Long pacienteId,
+            @RequestBody SaludGeneralRequest body) {
+        return ResponseEntity.ok(expedienteService.actualizarSaludGeneral(pacienteId, body));
     }
 }

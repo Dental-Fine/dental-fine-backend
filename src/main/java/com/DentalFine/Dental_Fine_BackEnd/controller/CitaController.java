@@ -33,8 +33,7 @@ public class CitaController {
     @GetMapping("/citas/disponibilidad")
     public List<HorarioDisponibilidadResponse> disponibilidad(
             @RequestParam("dentistaId") Long dentistaId,
-            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha
-    ) {
+            @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha) {
         return citaService.disponibilidad(dentistaId, fecha);
     }
 
@@ -52,17 +51,26 @@ public class CitaController {
     }
 
     @GetMapping("/citas/{id}")
-    public ResponseEntity<com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaResumenDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaResumenDTO> obtenerPorId(
+            @PathVariable Long id) {
         return ResponseEntity.ok(citaService.obtenerPorId(id));
     }
 
     @PutMapping("/citas/{id}/cancelar")
-    public ResponseEntity<CitaAgendarResponse> cancelar(@PathVariable Long id, @RequestBody com.DentalFine.Dental_Fine_BackEnd.dto.requests.CancelarCitaRequest body) {
+    public ResponseEntity<CitaAgendarResponse> cancelar(@PathVariable Long id,
+            @RequestBody com.DentalFine.Dental_Fine_BackEnd.dto.requests.CancelarCitaRequest body) {
         return ResponseEntity.ok(citaService.cancelarCita(id, body));
     }
 
     @GetMapping("/citas/paciente/{pacienteId}")
-    public ResponseEntity<List<com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaResumenDTO>> obtenerPorPaciente(@PathVariable Long pacienteId) {
+    public ResponseEntity<List<com.DentalFine.Dental_Fine_BackEnd.dto.responses.CitaResumenDTO>> obtenerPorPaciente(
+            @PathVariable Long pacienteId) {
         return ResponseEntity.ok(citaService.obtenerPorPaciente(pacienteId));
+    }
+
+    @PutMapping("citas/{id}/editar")
+    public ResponseEntity<CitaAgendarResponse> editar(@PathVariable Long id,
+            @jakarta.validation.Valid @RequestBody AgendarCitaRequest body) {
+        return ResponseEntity.ok(citaService.editarCita(id, body));
     }
 }

@@ -18,11 +18,9 @@ public class TipoServicios {
     private Long id;
 
     private String nombre;
-
-    /**
-     * Precio del servicio en {@link com.DentalFine.Dental_Fine_BackEnd.dto.MonedaCodigo#MXN} (peso mexicano).
-     */
     private Double precio;
-
     private Double duracion;
+
+    @jakarta.persistence.Column(columnDefinition = "boolean default true")
+    private Boolean activo = true;
 }

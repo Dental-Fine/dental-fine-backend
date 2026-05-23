@@ -19,10 +19,12 @@ public class Paciente {
     private Long id;
 
     private String nombre;
-    /** Apellidos del paciente (búsqueda y respuestas MVP). */
     private String apellidos;
     private String telefono;
     private String correo;
+
+    @jakarta.persistence.Column(columnDefinition = "boolean default true")
+    private Boolean activo = true;
 
     @jakarta.persistence.OneToOne(cascade = jakarta.persistence.CascadeType.ALL)
     @jakarta.persistence.JoinColumn(name = "usuario_id", referencedColumnName = "id")
