@@ -36,13 +36,7 @@ public class ExpedienteClinicoService {
         ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
                 .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado para el paciente"));
 
-        // Forzar inicialización Lazy
-        if (expediente.getEvoluciones() != null) {
-            expediente.getEvoluciones().size();
-        }
-        if (expediente.getOdontograma() != null && expediente.getOdontograma().getEstadoDientes() != null) {
-            expediente.getOdontograma().getEstadoDientes().size();
-        }
+        inicializarColecciones(expediente);
         return expediente;
     }
 
@@ -101,6 +95,18 @@ public class ExpedienteClinicoService {
         expediente.setEnfermedadesCronicas(request.enfermedadesCronicas());
         expediente.setTipoSanguineo(request.tipoSanguineo());
 
-        return expedienteRepository.save(expediente);
+        expediente = expedienteRepository.save(expediente);
+        inicializarColecciones(expediente);
+        return expediente;
+    }
+
+    private void inicializarColecciones(ExpedienteClinico expediente) {
+        if (expediente != null) {
+            org.hibernate.Hibernate.initialize(expediente.getEvoluciones());
+            if (expediente.getOdontograma() != null) {
+                org.hibernate.Hibernate.initialize(expediente.getOdontograma());
+                org.hibernate.Hibernate.initialize(expediente.getOdontograma().getEstadoDientes());
+            }
+        }
     }
 }

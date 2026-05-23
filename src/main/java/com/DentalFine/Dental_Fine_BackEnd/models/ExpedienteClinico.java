@@ -16,6 +16,7 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Data
@@ -32,6 +33,7 @@ public class ExpedienteClinico {
     private LocalDate fechaCreacion;
 
     @ToString.Exclude
+    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
