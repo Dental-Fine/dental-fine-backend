@@ -1,6 +1,0 @@
-CREATE TABLE usuarios (
-    id BIGSERIAL PRIMARY KEY,
-    login VARCHAR(100) NOT NULL UNIQUE,
-    clave VARCHAR(300) NOT NULL,
-    rol VARCHAR(50) NOT NULL
-);
