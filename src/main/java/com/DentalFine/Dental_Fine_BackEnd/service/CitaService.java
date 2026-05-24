@@ -144,12 +144,14 @@ public class CitaService {
         return respuesta;
     }
 
+    @Transactional(readOnly = true)
     public List<CitaResumenDTO> obtenerTodos() {
         return citaRepo.findByActivoTrue().stream()
                 .map(this::mapearACitaResumenDTO)
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public CitaResumenDTO obtenerPorId(Long id) {
         Cita cita = citaRepo.findById(id)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
@@ -157,6 +159,7 @@ public class CitaService {
         return mapearACitaResumenDTO(cita);
     }
 
+    @Transactional(readOnly = true)
     public List<CitaResumenDTO> obtenerPorPaciente(Long pacienteId) {
         return citaRepo.findByActivoTrue().stream()
                 .filter(c -> c.getPaciente().getId().equals(pacienteId))
