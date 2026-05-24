@@ -1,0 +1,1 @@
+ALTER TABLE evolucion_tratamiento DROP CONSTRAINT IF EXISTS evolucion_tratamiento_cita_id_key;

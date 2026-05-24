@@ -32,7 +32,7 @@ public class EvolucionTratamiento {
     private ExpedienteClinico expedienteClinico;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "cita_id")
     private Cita cita;
 }
