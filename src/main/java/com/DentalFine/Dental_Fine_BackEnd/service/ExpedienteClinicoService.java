@@ -12,6 +12,7 @@ import com.DentalFine.Dental_Fine_BackEnd.repository.CitaRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.EvolucionTratamientoRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.ExpedienteClinicoRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.OdontogramaRepository;
+import com.DentalFine.Dental_Fine_BackEnd.repository.PacienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,11 +31,17 @@ public class ExpedienteClinicoService {
     private EvolucionTratamientoRepository evolucionRepository;
     @Autowired
     private CitaRepository citaRepository;
+    @Autowired
+    private PacienteRepository pacienteRepository;
 
     @Transactional
     public ExpedienteClinico obtenerPorPacienteId(Long pacienteId) {
         ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
-                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado para el paciente"));
+                .orElseGet(() -> {
+                    Paciente paciente = pacienteRepository.findById(pacienteId)
+                            .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+                    return crearExpediente(paciente);
+                });
 
         inicializarColecciones(expediente);
         return expediente;
@@ -89,7 +96,11 @@ public class ExpedienteClinicoService {
     @Transactional
     public ExpedienteClinico actualizarSaludGeneral(Long pacienteId, SaludGeneralRequest request) {
         ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
-                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+                .orElseGet(() -> {
+                    Paciente paciente = pacienteRepository.findById(pacienteId)
+                            .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+                    return crearExpediente(paciente);
+                });
 
         expediente.setAlergias(request.alergias());
         expediente.setEnfermedadesCronicas(request.enfermedadesCronicas());
