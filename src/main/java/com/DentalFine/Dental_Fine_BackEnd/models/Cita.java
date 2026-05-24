@@ -55,8 +55,8 @@ public class Cita {
 
     @ToString.Exclude
     @com.fasterxml.jackson.annotation.JsonIgnore
-    @OneToOne(mappedBy = "cita", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
-    private EvolucionTratamiento evolucionTratamiento;
+    @jakarta.persistence.OneToMany(mappedBy = "cita", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    private java.util.List<EvolucionTratamiento> evolucionTratamientos = new java.util.ArrayList<>();
 
     public Cita(Dentista dentista, Paciente paciente, LocalDateTime fechaHoraInicio, LocalDateTime fechaHoraFin,
             Estado estado, LocalDate fechaCreacion) {
