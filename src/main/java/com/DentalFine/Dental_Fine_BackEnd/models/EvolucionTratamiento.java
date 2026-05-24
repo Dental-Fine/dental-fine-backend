@@ -31,6 +31,7 @@ public class EvolucionTratamiento {
     @JoinColumn(name = "expediente_clinico_id")
     private ExpedienteClinico expedienteClinico;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "cita_id")
     private Cita cita;
