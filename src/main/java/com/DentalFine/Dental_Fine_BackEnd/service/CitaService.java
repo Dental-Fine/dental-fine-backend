@@ -9,7 +9,6 @@ import com.DentalFine.Dental_Fine_BackEnd.models.Cita;
 import com.DentalFine.Dental_Fine_BackEnd.models.Dentista;
 import com.DentalFine.Dental_Fine_BackEnd.models.Estado;
 import com.DentalFine.Dental_Fine_BackEnd.models.Paciente;
-import com.DentalFine.Dental_Fine_BackEnd.models.TipoServicios;
 import com.DentalFine.Dental_Fine_BackEnd.repository.CitaRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.DentistaRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.PacienteRepository;
@@ -55,7 +54,9 @@ public class CitaService {
             LocalDateTime slotInicio = fecha.atTime(h, 0);
             LocalDateTime slotFin = slotInicio.plusHours(1);
             boolean ocupado = citas.stream().anyMatch(c -> !(c.getFechaHoraFin().isBefore(slotInicio)
-                    || c.getFechaHoraInicio().isAfter(slotFin) || c.getFechaHoraInicio().isEqual(slotFin)));
+                    || c.getFechaHoraFin().isEqual(slotInicio)
+                    || c.getFechaHoraInicio().isAfter(slotFin)
+                    || c.getFechaHoraInicio().isEqual(slotFin)));
             horarios.add(new HorarioDisponibilidadResponse(
                     String.format("%02d:00", h),
                     String.format("%02d:00", h + 1),
@@ -115,21 +116,23 @@ public class CitaService {
                 .orElseThrow(() -> new ValidationException("No existe la cita indicada."));
         cita.actualizarEstado(estado);
         citaRepo.save(cita);
-        return new CitaAgendarResponse(cita.getId(), cita.getEstado().name(), "Estado actualizado");
+        CitaAgendarResponse respuesta = new CitaAgendarResponse(cita.getId(), cita.getEstado().name(), "Estado actualizado");
+        agendaEventPublisher.publicarCitaConfirmada(respuesta);
+        return respuesta;
     }
 
     @Transactional
     public CitaAgendarResponse cancelarCita(Long idCita, CancelarCitaRequest request) {
         Cita cita = citaRepo.findById(idCita)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "No existe la cita indicada."));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No existe la cita indicada."));
 
         if (cita.getEstado() == Estado.CANCELADA) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                    org.springframework.http.HttpStatus.BAD_REQUEST, "La cita ya se encuentra cancelada.");
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "La cita ya se encuentra cancelada.");
         }
 
-        if ("PACIENTE".equalsIgnoreCase(request.rolUsuario())) {
+        if (request != null && "PACIENTE".equalsIgnoreCase(request.rolUsuario()) && validadoresCancelacion != null) {
             validadoresCancelacion.forEach(v -> v.validar(cita, request));
         }
 
@@ -144,6 +147,50 @@ public class CitaService {
         return respuesta;
     }
 
+    @Transactional
+    public CitaAgendarResponse marcarInasistencia(Long idCita) {
+        Cita cita = citaRepo.findById(idCita)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "No existe la cita indicada."));
+
+        if (cita.getEstado() == Estado.CANCELADA || cita.getEstado() == Estado.INASISTENCIA) {
+            throw new ValidationException("La cita ya se encuentra cancelada o marcada como inasistencia.");
+        }
+
+        if (cita.getEstado() == Estado.FINALIZADA) {
+            throw new ValidationException("No se puede marcar inasistencia en una cita ya finalizada.");
+        }
+
+        cita.actualizarEstado(Estado.INASISTENCIA);
+        Cita guardada = citaRepo.save(cita);
+
+        CitaAgendarResponse respuesta = new CitaAgendarResponse(
+                guardada.getId(),
+                guardada.getEstado().name(),
+                "Cita marcada como INASISTENCIA correctamente");
+        agendaEventPublisher.publicarCitaConfirmada(respuesta);
+        return respuesta;
+    }
+
+    @Transactional
+    public void eliminarCitaLogica(Long idCita) {
+        Cita cita = citaRepo.findById(idCita)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Cita no encontrada"));
+
+        cita.setActivo(false);
+        if (cita.getEstado() == null || cita.getEstado() == Estado.PENDIENTE || cita.getEstado() == Estado.ACTIVA) {
+            cita.actualizarEstado(Estado.CANCELADA);
+        }
+        Cita guardada = citaRepo.save(cita);
+
+        CitaAgendarResponse respuesta = new CitaAgendarResponse(
+                guardada.getId(),
+                guardada.getEstado().name(),
+                "Cita archivada / eliminada lógicamente");
+        agendaEventPublisher.publicarCitaConfirmada(respuesta);
+    }
+
     @Transactional(readOnly = true)
     public List<CitaResumenDTO> obtenerTodos() {
         return citaRepo.findByActivoTrue().stream()
@@ -154,8 +201,8 @@ public class CitaService {
     @Transactional(readOnly = true)
     public CitaResumenDTO obtenerPorId(Long id) {
         Cita cita = citaRepo.findById(id)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "Cita no encontrada"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Cita no encontrada"));
         return mapearACitaResumenDTO(cita);
     }
 
@@ -184,9 +231,23 @@ public class CitaService {
     }
 
     @Transactional
-    public CitaAgendarResponse editarCita(Long idCita, AgendarCitaRequest datos) {
+    public CitaAgendarResponse reagendarCita(Long idCita, AgendarCitaRequest datos) {
         Cita cita = citaRepo.findById(idCita)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cita no encontrada"));
+
+        if (Boolean.FALSE.equals(cita.getActivo())) {
+            throw new ValidationException("No se puede reagendar una cita archivada.");
+        }
+
+        if (cita.getEstado() == Estado.CANCELADA || cita.getEstado() == Estado.FINALIZADA
+                || cita.getEstado() == Estado.INASISTENCIA) {
+            throw new ValidationException("No se puede reagendar una cita con estado " + cita.getEstado());
+        }
+
+        if (datos.fechaHoraInicio() != null && datos.fechaHoraFin() != null
+                && !datos.fechaHoraInicio().isBefore(datos.fechaHoraFin())) {
+            throw new ValidationException("La fecha y hora de inicio debe ser anterior a la de fin.");
+        }
 
         if (!pacienteRepo.existsById(datos.pacienteId())) {
             throw new ValidationException("No existe un paciente con este id.");
@@ -194,16 +255,49 @@ public class CitaService {
         if (!dentistaRepository.existsById(datos.dentistaId())) {
             throw new ValidationException("No existe un dentista con este ID");
         }
+
+        // Verificar disponibilidad previa del dentista excluyendo la cita actual
+        LocalDateTime inicioDia = datos.fechaHoraInicio().toLocalDate().atStartOfDay();
+        LocalDateTime finDia = inicioDia.plusDays(1);
+
+        boolean solapamientoPorQuery = citaRepo.existeSolapamientoDentistaExcluyendoCita(
+                datos.dentistaId(), idCita, datos.fechaHoraInicio(), datos.fechaHoraFin());
+
+        List<Cita> citasDentista = citaRepo.findCitasDentistaEnRango(datos.dentistaId(), inicioDia, finDia);
+        boolean solapamientoEnMemoria = citasDentista.stream()
+                .filter(c -> c.getId() == null || !c.getId().equals(idCita))
+                .anyMatch(c -> !(c.getFechaHoraFin().isBefore(datos.fechaHoraInicio())
+                        || c.getFechaHoraFin().isEqual(datos.fechaHoraInicio())
+                        || c.getFechaHoraInicio().isAfter(datos.fechaHoraFin())
+                        || c.getFechaHoraInicio().isEqual(datos.fechaHoraFin())));
+
+        if (solapamientoPorQuery || solapamientoEnMemoria) {
+            throw new ValidationException("El dentista ya tiene una cita asignada en ese horario.");
+        }
+
+        // Verificar que el paciente no tenga otra cita distinta en el mismo día
+        if (citaRepo.existsOtraCitaPacienteEnRango(datos.pacienteId(), idCita, inicioDia, finDia)) {
+            throw new ValidationException("El paciente ya cuenta con una cita en este mismo dia");
+        }
+
         Paciente paciente = pacienteRepo.getReferenceById(datos.pacienteId());
         Dentista dentista = dentistaRepository.getReferenceById(datos.dentistaId());
         cita.setPaciente(paciente);
         cita.setDentista(dentista);
         cita.setFechaHoraInicio(datos.fechaHoraInicio());
         cita.setFechaHoraFin(datos.fechaHoraFin());
+
         Cita actualizada = citaRepo.save(cita);
-        return new CitaAgendarResponse(
+        CitaAgendarResponse respuesta = new CitaAgendarResponse(
                 actualizada.getId(),
-                actualizada.getEstado().name(),
+                actualizada.getEstado() != null ? actualizada.getEstado().name() : Estado.PENDIENTE.name(),
                 "Cita reprogramada correctamente");
+        agendaEventPublisher.publicarCitaConfirmada(respuesta);
+        return respuesta;
+    }
+
+    @Transactional
+    public CitaAgendarResponse editarCita(Long idCita, AgendarCitaRequest datos) {
+        return reagendarCita(idCita, datos);
     }
 }

@@ -35,6 +35,30 @@ public class PacienteService {
                 .toList();
     }
 
+    public List<PacienteBusquedaResponse> buscarAvanzado(String q, String nombre, String telefono) {
+        if (q != null && !q.isBlank()) {
+            return buscar(q);
+        }
+
+        boolean tieneNombre = nombre != null && !nombre.isBlank();
+        boolean tieneTelefono = telefono != null && !telefono.isBlank();
+
+        if (!tieneNombre && !tieneTelefono) {
+            return List.of();
+        }
+
+        String nombreLike = tieneNombre ? "%" + nombre.trim() + "%" : null;
+        String telefonoLike = tieneTelefono ? "%" + telefono.trim() + "%" : null;
+
+        return pacienteRepo.buscarPorNombreYTelefono(nombreLike, telefonoLike).stream()
+                .map(p -> new PacienteBusquedaResponse(
+                        p.getId(),
+                        p.getNombre(),
+                        p.getApellidos(),
+                        p.getTelefono()))
+                .toList();
+    }
+
     public Paciente registrarPaciente(RegistrarPacienteRequest datos) {
         Paciente p = pacienteRepo.save(new Paciente(datos));
         expedienteClinicoService.crearExpediente(p);
@@ -49,8 +73,9 @@ public class PacienteService {
 
     public PacienteDTO obtenerPorId(Long id) {
         Paciente p = pacienteRepo.findById(id)
-                .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
-                        org.springframework.http.HttpStatus.NOT_FOUND, "Paciente no encontrado"));
+                .filter(pac -> !Boolean.FALSE.equals(pac.getActivo()))
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Paciente no encontrado"));
         return new PacienteDTO(p.getId(), p.getNombre(), p.getApellidos(), p.getTelefono(), p.getCorreo());
     }
 
@@ -65,6 +90,7 @@ public class PacienteService {
     @Transactional
     public PacienteDTO actualizarPaciente(Long id, RegistrarPacienteRequest datos) {
         Paciente p = pacienteRepo.findById(id)
+                .filter(pac -> !Boolean.FALSE.equals(pac.getActivo()))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Paciente no encontrado"));
         p.setNombre(datos.nombre());
         p.setApellidos(datos.apellidos() != null ? datos.apellidos() : "");

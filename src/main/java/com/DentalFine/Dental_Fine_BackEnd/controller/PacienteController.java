@@ -27,33 +27,42 @@ public class PacienteController {
         this.pacienteService = pacienteService;
     }
 
-    @GetMapping("/pacientes/buscar")
-    public List<PacienteBusquedaResponse> buscar(@RequestParam("q") String q) {
-        return pacienteService.buscar(q);
+    /**
+     * HU06-T02: Búsqueda de pacientes por nombre, apellidos o teléfono (parámetro general 'q' o específicos 'nombre'/'telefono')
+     */
+    @GetMapping({"/api/pacientes/buscar", "/pacientes/buscar"})
+    public List<PacienteBusquedaResponse> buscar(
+            @RequestParam(value = "q", required = false) String q,
+            @RequestParam(value = "nombre", required = false) String nombre,
+            @RequestParam(value = "telefono", required = false) String telefono) {
+        return pacienteService.buscarAvanzado(q, nombre, telefono);
     }
 
-    @GetMapping("/pacientes")
+    @GetMapping({"/api/pacientes", "/pacientes"})
     public ResponseEntity<List<PacienteDTO>> obtenerTodos() {
         return ResponseEntity.ok(pacienteService.obtenerTodos());
     }
 
-    @GetMapping("/pacientes/{id}")
+    /**
+     * HU06-T02: Consulta de paciente por ID
+     */
+    @GetMapping({"/api/pacientes/{id}", "/pacientes/{id}"})
     public ResponseEntity<PacienteDTO> obtenerPorId(@PathVariable Long id) {
         return ResponseEntity.ok(pacienteService.obtenerPorId(id));
     }
 
-    @PostMapping("/pacientes")
+    @PostMapping({"/api/pacientes", "/pacientes"})
     public ResponseEntity<PacienteDTO> crearPaciente(@RequestBody RegistrarPacienteRequest datos) {
         return ResponseEntity.status(HttpStatus.CREATED).body(pacienteService.registrarPacienteYRetornarDto(datos));
     }
 
-    @PutMapping("/pacientes/{id}")
+    @PutMapping({"/api/pacientes/{id}", "/pacientes/{id}"})
     public ResponseEntity<PacienteDTO> actualizarPaciente(@PathVariable Long id,
             @RequestBody RegistrarPacienteRequest datos) {
         return ResponseEntity.ok(pacienteService.actualizarPaciente(id, datos));
     }
 
-    @DeleteMapping("/pacientes/{id}")
+    @DeleteMapping({"/api/pacientes/{id}", "/pacientes/{id}"})
     public ResponseEntity<Void> eliminarPaciente(@PathVariable Long id) {
         pacienteService.eliminarPacienteLogico(id);
         return ResponseEntity.noContent().build();
