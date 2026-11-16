@@ -68,7 +68,10 @@ public class CitaController {
         return ResponseEntity.ok(citaService.obtenerPorPaciente(pacienteId));
     }
 
-    @PutMapping("citas/{id}/editar")
+    /**
+     * HU04-T02: Endpoint PUT /api/citas/{id} para actualización y reprogramación de parámetros
+     */
+    @PutMapping({"/api/citas/{id}", "/citas/{id}", "/api/citas/{id}/editar", "/citas/{id}/editar"})
     public ResponseEntity<CitaAgendarResponse> editar(@PathVariable Long id,
             @jakarta.validation.Valid @RequestBody AgendarCitaRequest body) {
         return ResponseEntity.ok(citaService.editarCita(id, body));
