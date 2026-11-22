@@ -6,12 +6,17 @@ import com.DentalFine.Dental_Fine_BackEnd.dto.responses.LoginResponse;
 import com.DentalFine.Dental_Fine_BackEnd.dto.responses.UsuarioLoginResponse;
 import com.DentalFine.Dental_Fine_BackEnd.models.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 public class AuthController {
@@ -23,18 +28,26 @@ public class AuthController {
     private TokenService tokenService;
 
     @PostMapping("/auth/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        var authenticationToken = new UsernamePasswordAuthenticationToken(request.correo(), request.contrasena());
-        var usuarioAutenticado = authenticationManager.authenticate(authenticationToken);
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
 
-        var usuario = (Usuario) usuarioAutenticado.getPrincipal();
-        var jwtToken = tokenService.generarToken(usuario);
 
-        LoginResponse body = new LoginResponse(
-                jwtToken,
-                new UsuarioLoginResponse(usuario.getId(), usuario.getRol().name())
-        );
-        return ResponseEntity.ok(body);
+            var authenticationToken = new UsernamePasswordAuthenticationToken(request.correo(), request.contrasena());
+            var usuarioAutenticado = authenticationManager.authenticate(authenticationToken);
+
+            var usuario = (Usuario) usuarioAutenticado.getPrincipal();
+            var jwtToken = tokenService.generarToken(usuario);
+
+            LoginResponse body = new LoginResponse(
+                    jwtToken,
+                    new UsuarioLoginResponse(usuario.getId(), usuario.getRol().name())
+            );
+
+            return ResponseEntity.ok(body);
+        }
+        catch (BadCredentialsException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje","Correo o contraseña incorrecta"));
+        }
     }
 }
 // Force compile update

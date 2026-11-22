@@ -36,6 +36,7 @@ class CitaServiceTest {
     @Mock private TipoServiciosRepository tipoServiciosRepository;
     @Mock private List<ValidadorDeCitas> validadores;
     @Mock private AgendaEventPublisher agendaEventPublisher;
+    @Mock private EmailService emailService;
 
     @InjectMocks
     private CitaService citaService;
@@ -60,6 +61,7 @@ class CitaServiceTest {
         Cita citaGuardada = new Cita(); 
         citaGuardada.setId(1L); 
         citaGuardada.setEstado(Estado.PENDIENTE);
+        citaGuardada.setFechaHoraInicio(request.fechaHoraInicio());
         Mockito.when(citaRepo.save(any(Cita.class))).thenReturn(citaGuardada);
 
         // Act
