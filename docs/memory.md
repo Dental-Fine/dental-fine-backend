@@ -127,9 +127,9 @@ Sistema SaaS web integral de gestión clínica y administrativa odontológica co
 - [ ] **DFI-8 (HU-06)**: Registro y Consulta de Expedientes Médicos (CU3) - *Luis Fonseca*
   - [x] **DFI-30 (HU06-T01)**: Formularios frontend para datos personales, antecedentes y tipo de sangre - *Jesús Guzmán*
   - [ ] **DFI-31 (HU06-T02)**: Servicios REST para consulta de pacientes por nombre, teléfono o ID - *Kevin Haziel*
-- [-] **DFI-40**: HU-06 - Modificación y Configuración de Expedientes Médicos [En curso] - *Ricardo Moreno*
-  - [-] **DFI-41 (DFI-40-T01)**: Migración Flyway V9, modelo JPA y DTOs para expediente clínico NOM-004 y NOM-013 [En curso] - *Ricardo Moreno*
-  - [ ] **DFI-42 (DFI-40-T02)**: Modal interactivo de configuración de expediente y visualización de alertas médicas en React - *Ricardo Moreno*
+- [x] **DFI-40**: HU-06 - Modificación y Configuración de Expedientes Médicos - *Ricardo Moreno*
+  - [x] **DFI-41 (DFI-40-T01)**: Migración Flyway V9, modelo JPA y DTOs para expediente clínico NOM-004 y NOM-013 - *Ricardo Moreno*
+  - [x] **DFI-42 (DFI-40-T02)**: Modal interactivo de configuración de expediente y visualización de alertas médicas en React - *Ricardo Moreno*
 - [-] **DFI-12 (HU-07)**: Mapa Dental e Historial Clínico (Odontograma Interactivo) [En curso] - *Ricardo Moreno*
   - [x] **DFI-32 (HU07-T01)**: Desarrollo del componente de Odontograma interactivo con SVG/Canvas - *Jesús Guzmán*
   - [ ] **DFI-33 (HU07-T02)**: API para almacenamiento de evoluciones dentales asociadas al expediente (`JSONB`) - *Ricardo Moreno*
