@@ -43,6 +43,9 @@ class CitaControllerIntegrationTest {
     @Autowired
     private com.DentalFine.Dental_Fine_BackEnd.repository.TipoServiciosRepository tipoServicioRepo;
 
+    @org.springframework.test.context.bean.override.mockito.MockitoBean
+    private com.DentalFine.Dental_Fine_BackEnd.service.EmailService emailService;
+
     @BeforeEach
     void setUp() {
         Usuario testUser = new Usuario(null, "test@dentalfine.com", "password", Rol.ROLE_DENTISTA);

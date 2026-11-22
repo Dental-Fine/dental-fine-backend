@@ -41,9 +41,24 @@ public class PacienteService {
         return p;
     }
 
+    private PacienteDTO convertirADto(Paciente p) {
+        return new PacienteDTO(
+                p.getId(),
+                p.getNombre(),
+                p.getApellidos(),
+                p.getTelefono(),
+                p.getCorreo(),
+                p.getFechaNacimiento(),
+                p.getSexo(),
+                p.getDireccion(),
+                p.getContactoEmergenciaNombre(),
+                p.getContactoEmergenciaTelefono()
+        );
+    }
+
     public List<PacienteDTO> obtenerTodos() {
         return pacienteRepo.findByActivoTrue().stream()
-                .map(p -> new PacienteDTO(p.getId(), p.getNombre(), p.getApellidos(), p.getTelefono(), p.getCorreo()))
+                .map(this::convertirADto)
                 .toList();
     }
 
@@ -51,15 +66,14 @@ public class PacienteService {
         Paciente p = pacienteRepo.findById(id)
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
                         org.springframework.http.HttpStatus.NOT_FOUND, "Paciente no encontrado"));
-        return new PacienteDTO(p.getId(), p.getNombre(), p.getApellidos(), p.getTelefono(), p.getCorreo());
+        return convertirADto(p);
     }
 
     @Transactional
     public PacienteDTO registrarPacienteYRetornarDto(RegistrarPacienteRequest datos) {
         Paciente p = pacienteRepo.save(new Paciente(datos));
         expedienteClinicoService.crearExpediente(p);
-        return new PacienteDTO(
-                p.getId(), p.getNombre(), p.getApellidos(), p.getTelefono(), p.getCorreo());
+        return convertirADto(p);
     }
 
     @Transactional
@@ -70,9 +84,23 @@ public class PacienteService {
         p.setApellidos(datos.apellidos() != null ? datos.apellidos() : "");
         p.setTelefono(datos.telefono());
         p.setCorreo(datos.correo());
+        if (datos.fechaNacimiento() != null) {
+            p.setFechaNacimiento(datos.fechaNacimiento());
+        }
+        if (datos.sexo() != null) {
+            p.setSexo(datos.sexo());
+        }
+        if (datos.direccion() != null) {
+            p.setDireccion(datos.direccion());
+        }
+        if (datos.contactoEmergenciaNombre() != null) {
+            p.setContactoEmergenciaNombre(datos.contactoEmergenciaNombre());
+        }
+        if (datos.contactoEmergenciaTelefono() != null) {
+            p.setContactoEmergenciaTelefono(datos.contactoEmergenciaTelefono());
+        }
         pacienteRepo.save(p);
-        return new PacienteDTO(
-                p.getId(), p.getNombre(), p.getApellidos(), p.getTelefono(), p.getCorreo());
+        return convertirADto(p);
     }
 
     @Transactional

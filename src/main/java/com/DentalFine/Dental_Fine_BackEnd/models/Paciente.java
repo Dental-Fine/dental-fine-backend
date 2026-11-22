@@ -41,5 +41,10 @@ public class Paciente {
         this.apellidos = datos.apellidos() != null ? datos.apellidos() : "";
         this.telefono = datos.telefono();
         this.correo = datos.correo();
+        this.fechaNacimiento = datos.fechaNacimiento();
+        this.sexo = datos.sexo();
+        this.direccion = datos.direccion();
+        this.contactoEmergenciaNombre = datos.contactoEmergenciaNombre();
+        this.contactoEmergenciaTelefono = datos.contactoEmergenciaTelefono();
     }
 }
