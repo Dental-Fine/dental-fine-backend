@@ -3,12 +3,15 @@ package com.DentalFine.Dental_Fine_BackEnd.service;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.EvolucionAgregarRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.OdontogramaActualizarRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.SaludGeneralRequest;
+import com.DentalFine.Dental_Fine_BackEnd.dto.responses.EvolucionTratamientoDTO;
 import com.DentalFine.Dental_Fine_BackEnd.models.Cita;
+import com.DentalFine.Dental_Fine_BackEnd.models.Dentista;
 import com.DentalFine.Dental_Fine_BackEnd.models.EvolucionTratamiento;
 import com.DentalFine.Dental_Fine_BackEnd.models.ExpedienteClinico;
 import com.DentalFine.Dental_Fine_BackEnd.models.Odontograma;
 import com.DentalFine.Dental_Fine_BackEnd.models.Paciente;
 import com.DentalFine.Dental_Fine_BackEnd.repository.CitaRepository;
+import com.DentalFine.Dental_Fine_BackEnd.repository.DentistaRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.EvolucionTratamientoRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.ExpedienteClinicoRepository;
 import com.DentalFine.Dental_Fine_BackEnd.repository.OdontogramaRepository;
@@ -19,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class ExpedienteClinicoService {
@@ -33,6 +37,8 @@ public class ExpedienteClinicoService {
     private CitaRepository citaRepository;
     @Autowired
     private PacienteRepository pacienteRepository;
+    @Autowired
+    private DentistaRepository dentistaRepository;
 
     @Transactional
     public ExpedienteClinico obtenerPorPacienteId(Long pacienteId) {
@@ -49,16 +55,21 @@ public class ExpedienteClinicoService {
 
     @Transactional
     public ExpedienteClinico crearExpediente(Paciente paciente) {
-        ExpedienteClinico exp = new ExpedienteClinico();
-        exp.setPaciente(paciente);
-        exp.setFechaCreacion(LocalDate.now());
+        ExpedienteClinico nuevo = new ExpedienteClinico();
+        nuevo.setPaciente(paciente);
+        nuevo.setAlergias("Ninguna");
+        nuevo.setEnfermedadesCronicas("Ninguna");
+        nuevo.setTipoSanguineo("O+");
 
-        Odontograma odontograma = new Odontograma();
-        odontograma.setExpedienteClinico(exp);
-        odontograma.setEstadoDientes(new HashMap<>());
+        nuevo = expedienteRepository.save(nuevo);
 
-        exp.setOdontograma(odontograma);
-        return expedienteRepository.save(exp);
+        Odontograma od = new Odontograma();
+        od.setExpedienteClinico(nuevo);
+        od.setEstadoDientes(new HashMap<>());
+        od = odontogramaRepository.save(od);
+
+        nuevo.setOdontograma(od);
+        return nuevo;
     }
 
     @Transactional
@@ -66,31 +77,68 @@ public class ExpedienteClinicoService {
         ExpedienteClinico exp = expedienteRepository.findById(expedienteId)
                 .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
 
-        Odontograma odontograma = exp.getOdontograma();
-        if (odontograma == null) {
-            odontograma = new Odontograma();
-            odontograma.setExpedienteClinico(exp);
-            exp.setOdontograma(odontograma);
+        Odontograma od = exp.getOdontograma();
+        if (od == null) {
+            od = new Odontograma();
+            od.setExpedienteClinico(exp);
+            od.setEstadoDientes(new HashMap<>());
         }
-        odontograma.setEstadoDientes(request.estadoDientes());
-        return odontogramaRepository.save(odontograma);
+
+        od.setEstadoDientes(request.estadoDientes());
+        return odontogramaRepository.save(od);
     }
 
     @Transactional
-    public EvolucionTratamiento agregarEvolucion(Long expedienteId, EvolucionAgregarRequest request) {
+    public EvolucionTratamientoDTO agregarEvolucion(Long expedienteId, EvolucionAgregarRequest request) {
         ExpedienteClinico exp = expedienteRepository.findById(expedienteId)
-                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado"));
+                .orElseThrow(() -> new IllegalArgumentException("Expediente no encontrado con ID: " + expedienteId));
 
-        Cita cita = citaRepository.findById(request.citaId())
-                .orElseThrow(() -> new IllegalArgumentException("Cita no encontrada"));
+        Cita cita = null;
+        if (request.citaId() != null) {
+            cita = citaRepository.findById(request.citaId()).orElse(null);
+        }
+
+        Dentista dentista = null;
+        if (request.dentistaId() != null) {
+            dentista = dentistaRepository.findById(request.dentistaId()).orElse(null);
+        }
 
         EvolucionTratamiento ev = new EvolucionTratamiento();
         ev.setExpedienteClinico(exp);
         ev.setCita(cita);
+        ev.setDentista(dentista);
         ev.setNotasClinicas(request.notasClinicas());
-        ev.setFechaRegistro(LocalDate.now());
+        ev.setPiezaDental(request.piezaDental());
+        ev.setProcedimiento(request.procedimiento());
+        ev.setFechaRegistro(request.fechaRegistro() != null ? request.fechaRegistro() : LocalDate.now());
 
-        return evolucionRepository.save(ev);
+        EvolucionTratamiento guardada = evolucionRepository.save(ev);
+        return mapToDTO(guardada);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EvolucionTratamientoDTO> listarEvoluciones(Long expedienteId) {
+        if (!expedienteRepository.existsById(expedienteId)) {
+            throw new IllegalArgumentException("Expediente no encontrado con ID: " + expedienteId);
+        }
+        return evolucionRepository.findByExpedienteClinicoIdOrderByFechaRegistroDescIdDesc(expedienteId)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    private EvolucionTratamientoDTO mapToDTO(EvolucionTratamiento ev) {
+        return new EvolucionTratamientoDTO(
+                ev.getId(),
+                ev.getExpedienteClinico() != null ? ev.getExpedienteClinico().getId() : null,
+                ev.getCita() != null ? ev.getCita().getId() : null,
+                ev.getDentista() != null ? ev.getDentista().getId() : null,
+                ev.getDentista() != null ? ev.getDentista().getNombre() : null,
+                ev.getNotasClinicas(),
+                ev.getPiezaDental(),
+                ev.getProcedimiento(),
+                ev.getFechaRegistro()
+        );
     }
 
     @Transactional

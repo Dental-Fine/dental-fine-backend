@@ -1,13 +1,13 @@
 package com.DentalFine.Dental_Fine_BackEnd.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +28,7 @@ public class EvolucionTratamiento {
     private String piezaDental;
     private String procedimiento;
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "usuario"})
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "dentista_id")
     private Dentista dentista;

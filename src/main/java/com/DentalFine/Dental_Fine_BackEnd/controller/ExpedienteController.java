@@ -3,10 +3,11 @@ package com.DentalFine.Dental_Fine_BackEnd.controller;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.EvolucionAgregarRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.OdontogramaActualizarRequest;
 import com.DentalFine.Dental_Fine_BackEnd.dto.requests.SaludGeneralRequest;
-import com.DentalFine.Dental_Fine_BackEnd.models.EvolucionTratamiento;
+import com.DentalFine.Dental_Fine_BackEnd.dto.responses.EvolucionTratamientoDTO;
 import com.DentalFine.Dental_Fine_BackEnd.models.ExpedienteClinico;
 import com.DentalFine.Dental_Fine_BackEnd.models.Odontograma;
 import com.DentalFine.Dental_Fine_BackEnd.service.ExpedienteClinicoService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class ExpedienteController {
@@ -36,9 +39,14 @@ public class ExpedienteController {
     }
 
     @PostMapping("/expedientes/{id}/evolucion")
-    public ResponseEntity<EvolucionTratamiento> agregarEvolucion(@PathVariable Long id,
-            @RequestBody EvolucionAgregarRequest body) {
+    public ResponseEntity<EvolucionTratamientoDTO> agregarEvolucion(@PathVariable Long id,
+            @Valid @RequestBody EvolucionAgregarRequest body) {
         return ResponseEntity.ok(expedienteService.agregarEvolucion(id, body));
+    }
+
+    @GetMapping("/expedientes/{id}/evoluciones")
+    public ResponseEntity<List<EvolucionTratamientoDTO>> listarEvoluciones(@PathVariable Long id) {
+        return ResponseEntity.ok(expedienteService.listarEvoluciones(id));
     }
 
     @PutMapping("/expedientes/paciente/{pacienteId}/salud-general")
