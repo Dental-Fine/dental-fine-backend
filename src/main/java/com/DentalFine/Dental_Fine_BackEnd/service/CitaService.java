@@ -45,6 +45,8 @@ public class CitaService {
     private List<ValidadorCancelacionDeCitas> validadoresCancelacion;
     @Autowired
     private AgendaEventPublisher agendaEventPublisher;
+    @Autowired
+    private EmailService emailService;
 
     public List<HorarioDisponibilidadResponse> disponibilidad(Long dentistaId, LocalDate fecha) {
         LocalDateTime inicio = fecha.atStartOfDay();
@@ -105,6 +107,22 @@ public class CitaService {
                 guardada.getId(),
                 guardada.getEstado().name(),
                 "Cita agendada correctamente");
+
+        String fechaStr = guardada.getFechaHoraInicio() != null 
+                ? guardada.getFechaHoraInicio().toString().replace("T", " ") 
+                : (datos.fechaHoraInicio() != null ? datos.fechaHoraInicio().toString().replace("T", " ") : "");
+        String nombrePaciente = (paciente.getNombre() != null ? paciente.getNombre() : "") 
+                + (paciente.getApellidos() != null ? " " + paciente.getApellidos() : "");
+        String nombreDoctor = dentista.getNombre() != null ? dentista.getNombre() : "Especialista";
+
+        if (emailService != null) {
+            emailService.enviarConfirmacionCita(
+                    paciente.getCorreo(),
+                    nombrePaciente.isBlank() ? "Paciente" : nombrePaciente.trim(),
+                    nombreDoctor,
+                    fechaStr
+            );
+        }
         agendaEventPublisher.publicarCitaConfirmada(respuesta);
         return respuesta;
     }
