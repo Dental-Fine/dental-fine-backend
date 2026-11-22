@@ -23,6 +23,12 @@ public class Paciente {
     private String telefono;
     private String correo;
 
+    private java.time.LocalDate fechaNacimiento;
+    private String sexo;
+    private String direccion;
+    private String contactoEmergenciaNombre;
+    private String contactoEmergenciaTelefono;
+
     @jakarta.persistence.Column(columnDefinition = "boolean default true")
     private Boolean activo = true;
 

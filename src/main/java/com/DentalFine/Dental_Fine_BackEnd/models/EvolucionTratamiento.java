@@ -25,6 +25,12 @@ public class EvolucionTratamiento {
 
     private String notasClinicas;
     private LocalDate fechaRegistro;
+    private String piezaDental;
+    private String procedimiento;
+
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @JoinColumn(name = "dentista_id")
+    private Dentista dentista;
 
     @JsonIgnore
     @ManyToOne

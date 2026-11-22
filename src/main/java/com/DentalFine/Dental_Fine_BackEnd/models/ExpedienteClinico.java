@@ -32,6 +32,15 @@ public class ExpedienteClinico {
     private String tipoSanguineo;
     private LocalDate fechaCreacion;
 
+    private Boolean alergiaAnestesia = false;
+    private Boolean alergiaLatex = false;
+    private Boolean hipertension = false;
+    private Boolean diabetes = false;
+    private Boolean cardiopatias = false;
+    private Boolean problemasCoagulacion = false;
+    private Boolean embarazo = false;
+    private String medicamentosActuales;
+
     @ToString.Exclude
     @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)

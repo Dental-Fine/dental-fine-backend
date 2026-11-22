@@ -95,16 +95,35 @@ public class ExpedienteClinicoService {
 
     @Transactional
     public ExpedienteClinico actualizarSaludGeneral(Long pacienteId, SaludGeneralRequest request) {
-        ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
-                .orElseGet(() -> {
-                    Paciente paciente = pacienteRepository.findById(pacienteId)
-                            .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
-                    return crearExpediente(paciente);
-                });
+        Paciente paciente = pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
 
-        expediente.setAlergias(request.alergias());
-        expediente.setEnfermedadesCronicas(request.enfermedadesCronicas());
-        expediente.setTipoSanguineo(request.tipoSanguineo());
+        // 1. Actualizar Ficha de Identificación del Paciente (NOM-004) si se reciben
+        if (request.fechaNacimiento() != null) paciente.setFechaNacimiento(request.fechaNacimiento());
+        if (request.sexo() != null) paciente.setSexo(request.sexo());
+        if (request.direccion() != null) paciente.setDireccion(request.direccion());
+        if (request.contactoEmergenciaNombre() != null) paciente.setContactoEmergenciaNombre(request.contactoEmergenciaNombre());
+        if (request.contactoEmergenciaTelefono() != null) paciente.setContactoEmergenciaTelefono(request.contactoEmergenciaTelefono());
+        pacienteRepository.save(paciente);
+
+        // 2. Obtener o crear expediente clínico
+        ExpedienteClinico expediente = expedienteRepository.findByPacienteId(pacienteId)
+                .orElseGet(() -> crearExpediente(paciente));
+
+        // 3. Actualizar antecedentes generales
+        if (request.alergias() != null) expediente.setAlergias(request.alergias());
+        if (request.enfermedadesCronicas() != null) expediente.setEnfermedadesCronicas(request.enfermedadesCronicas());
+        if (request.tipoSanguineo() != null) expediente.setTipoSanguineo(request.tipoSanguineo());
+
+        // 4. Actualizar Alertas Médicas Estomatológicas (NOM-013)
+        if (request.alergiaAnestesia() != null) expediente.setAlergiaAnestesia(request.alergiaAnestesia());
+        if (request.alergiaLatex() != null) expediente.setAlergiaLatex(request.alergiaLatex());
+        if (request.hipertension() != null) expediente.setHipertension(request.hipertension());
+        if (request.diabetes() != null) expediente.setDiabetes(request.diabetes());
+        if (request.cardiopatias() != null) expediente.setCardiopatias(request.cardiopatias());
+        if (request.problemasCoagulacion() != null) expediente.setProblemasCoagulacion(request.problemasCoagulacion());
+        if (request.embarazo() != null) expediente.setEmbarazo(request.embarazo());
+        if (request.medicamentosActuales() != null) expediente.setMedicamentosActuales(request.medicamentosActuales());
 
         expediente = expedienteRepository.save(expediente);
         inicializarColecciones(expediente);
